@@ -22,4 +22,5 @@ Para acceder a Hue: [localhost:8888](http://localhost:8888)
 # Configuraciones
 
 Para modificar la configuracion de hue, el archivo es `hue.ini`.
+
 Para modificar la configuracion de hadoop, el archivo es `config`.
