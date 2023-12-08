@@ -1,0 +1,65 @@
+version: "3"
+services:
+  namenode:
+    image: apache/hadoop:3.3.5
+    hostname: namenode
+    command: ["hdfs", "namenode"]
+    ports:
+      - 9870:9870
+      - 8020:8020
+    env_file:
+      - ./config
+    environment:
+      ENSURE_NAMENODE_DIR: "/tmp/hadoop-root/dfs/name"
+
+  datanode:
+    image: apache/hadoop:3.3.5
+    command: ["hdfs", "datanode"]
+    env_file:
+      - ./config
+    environment:
+      SERVICE_PRECONDITION: "namenode:8020"
+
+  resourcemanager:
+    image: apache/hadoop:3.3.5
+    hostname: resourcemanager
+    command: ["yarn", "resourcemanager"]
+    ports:
+        - 8088:8088
+        - 8032:8032
+    env_file:
+      - ./config
+    volumes:
+      - ./test.sh:/opt/test.sh
+
+  nodemanager:
+    image: apache/hadoop:3.3.5
+    command: ["yarn", "nodemanager"]
+    env_file:
+      - ./config
+
+  hue:
+    image: gethue/hue:latest
+    hostname: hue
+    container_name: hue
+    dns: 8.8.8.8
+    ports:
+    - "8888:8888"
+    volumes:
+      - ./hue.ini:/usr/share/hue/desktop/conf/z-hue.ini
+    depends_on:
+      - "database"
+      - "nodemanager"
+      - "namenode"
+      - "datanode"
+
+  database:
+    image: postgres:latest
+    container_name: database
+    ports:
+        - "5433:5433"
+        - "5432:5432"
+    environment:
+        POSTGRES_USER: hueroot
+        POSTGRES_PASSWORD: secret
+        POSTGRES_DB: hue
