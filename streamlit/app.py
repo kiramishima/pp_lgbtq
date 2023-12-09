@@ -8,7 +8,6 @@ import locale
 from datetime import datetime as dt
 import folium
 import shapely.geometry
-from streamlit_folium import st_folium
 
 locale.setlocale(locale.LC_ALL,'es_ES.UTF-8')
 DATA_URL = 'https://raw.githubusercontent.com/kiramishima/pp_lgbtq/master/Datasets/reportes_visible_2023-10-oct.csv'
