@@ -268,12 +268,8 @@ cdmx = gdf[gdf.entidad == 'Ciudad de México']
 
 m = folium.Map(location=cdmx_map, zoom_start=10, tiles="CartoDB positron")
 
-px.set_mapbox_access_token('pk.eyJ1Ijoia2lyYW1pc2hpbWEiLCJhIjoiY2lnbW04bTBoMDAwZjZjbTNubTQ2cmhldCJ9.wVIaISxCNd4P-RbyOsUMUg')
-cdmx.explore(
-    m=m,
-    column="tipo_de_agresion",
-    tiles="CartoDB positron"
-)
+px.set_mapbox_access_token(st.secrets['MAPBOX_KEY'])
+
 fig11 = px.scatter_mapbox(cdmx,
     lat=cdmx.geometry.y,
     lon=cdmx.geometry.x,
