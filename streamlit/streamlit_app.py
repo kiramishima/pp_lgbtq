@@ -4,12 +4,12 @@ import geopandas as gpd
 import numpy as np
 import plotly.figure_factory as ff
 import plotly.express as px
-import locale
+# import locale
 from datetime import datetime as dt
 import folium
-import shapely.geometry
+# import shapely.geometry
 
-locale.setlocale(locale.LC_ALL,'es_ES.UTF-8')
+# locale.setlocale(locale.LC_ALL,'es_ES.UTF-8')
 DATA_URL = 'https://raw.githubusercontent.com/kiramishima/pp_lgbtq/master/Datasets/reportes_visible_2023-10-oct.csv'
 LGBTQ_COLORS = ["#c095cb", "#6a95d5", "#74ac6f", "#f7d168", "#f6934c", "#e15971"]
 LGBTQ_COLORS2 = LGBTQ_COLORS + ["#71d1fb", "#5766ce", "#c6237c", "#ed595e"]
@@ -20,7 +20,7 @@ def load_data():
     df = pd.read_csv(DATA_URL, encoding='latin1')
     return df
 
-st.title('Tendencia de violencia hacia la comunidad LGBTQ+ (2018-2023)')
+st.title('Violencia hacia la comunidad LGBTQ+ (2018-2023)')
 
 df = load_data()
 # Parser dia incidente to DateTime type
