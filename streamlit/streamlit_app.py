@@ -214,7 +214,6 @@ st.plotly_chart(fig8, theme=None)
 st.divider()
 st.header('Nivel de estudios de las personas de la comunidad LGBTQ+.')
 data_escolaridad = df.groupby('escolaridad', as_index=False).size().sort_values('size', ascending=True)
-data_escolaridad
 
 fig9 = px.bar(data_escolaridad,
     x='escolaridad',
