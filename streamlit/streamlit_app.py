@@ -4,16 +4,21 @@ import geopandas as gpd
 import numpy as np
 import plotly.figure_factory as ff
 import plotly.express as px
-# import locale
 from datetime import datetime as dt
 import folium
-# import shapely.geometry
+from statsmodels.tsa.holtwinters import SimpleExpSmoothing
+import warnings
+warnings.filterwarnings("ignore")
 
-# locale.setlocale(locale.LC_ALL,'es_ES.UTF-8')
 DATA_URL = 'https://raw.githubusercontent.com/kiramishima/pp_lgbtq/master/Datasets/reportes_visible_2023-10-oct.csv'
 LGBTQ_COLORS = ["#c095cb", "#6a95d5", "#74ac6f", "#f7d168", "#f6934c", "#e15971"]
 LGBTQ_COLORS2 = LGBTQ_COLORS + ["#71d1fb", "#5766ce", "#c6237c", "#ed595e"]
 
+st.set_page_config(
+    page_title="LCDN 504 - LGBTQ+ Dashboard",
+    page_icon="📊",
+    layout="wide",
+)
 
 @st.cache_data
 def load_data():
@@ -67,17 +72,135 @@ with tab2:
     option = st.selectbox(
         "Visualizar por año",
         years,
-        index=None,
+        index=0,
         placeholder="2023",
+    )
+
+    option2 = st.selectbox(
+        "Aplicar método de suavizamiento a la serie",
+        ('No aplicar', 'Promedio móvil', 'Promedios móviles ponderados', 'Suavizamiento exponencial', 'Todos los métodos'),
+        index=0,
+        placeholder="",
     )
 
     temp_df_bymonth = df_bymonth.copy()
     if option != 'Todo':
         temp_df_bymonth = df_select[df_select.dia_incidente.dt.year == option].groupby(pd.Grouper(key='dia_incidente', freq='M'), as_index=False).size()
 
+    match option2:
+        case 'Promedio móvil':
+            data = temp_df_bymonth['size'].tolist()
+            #print(data)
+            data2 = []
+            for idx, item in enumerate(data):
+                if idx - 3 >= 0:
+                    # print(idx, item)
+                    v1 = data[idx-3]
+                    v2 = data[idx-2]
+                    v3 = data[idx-1]
+                    # mes, _ = item
+                    prom = (v1 + v2 + v3) / 3
+                    # print(prom)
+                    data2.append(round(prom, 2))
+                else:
+                    data2.append(item)
+            temp_df_bymonth['PM'] = data2
+        case 'Promedios móviles ponderados':
+            data = temp_df_bymonth['size'].tolist()
+            #print(data)
+            data2 = []
+            for idx, item in enumerate(data):
+                if idx != len(data) and idx >= 3:
+                    v0 = data[idx-3]
+                    v1 = data[idx-2]
+                    v2 = data[idx-1]
+                    prom = v0/6 + 2*v1/6 + 3*v2/6
+                    # print(prom)
+                    data2.append(round(prom, 2))
+                else:
+                    data2.append(item)
+            temp_df_bymonth['PMP'] = data2
+        case 'Suavizamiento exponencial':
+            data = temp_df_bymonth['size'].tolist()
+            d = [0 if i is None else i for i in data]
+            model = SimpleExpSmoothing(d[:len(d)]).fit(smoothing_level=0.6)
+            res = model.fittedvalues
+            temp_df_bymonth['SuaExp'] = res
+        case 'Todos los métodos':
+            data = temp_df_bymonth['size'].tolist()
+            # PM
+            data2 = []
+            for idx, item in enumerate(data):
+                if idx - 3 >= 0:
+                    # print(idx, item)
+                    v1 = data[idx-3]
+                    v2 = data[idx-2]
+                    v3 = data[idx-1]
+                    # mes, _ = item
+                    prom = (v1 + v2 + v3) / 3
+                    # print(prom)
+                    data2.append(round(prom, 2))
+                else:
+                    data2.append(item)
+            # PMP
+            data3 = []
+            for idx, item in enumerate(data):
+                if idx != len(data) and idx >= 3:
+                    v0 = data[idx-3]
+                    v1 = data[idx-2]
+                    v2 = data[idx-1]
+                    prom = v0/6 + 2*v1/6 + 3*v2/6
+                    # print(prom)
+                    data3.append(round(prom, 2))
+                else:
+                    data3.append(item)
+            # SuaExp
+            d = [0 if i is None else i for i in data]
+            model = SimpleExpSmoothing(d[:len(d)]).fit(smoothing_level=0.6)
+            res = model.fittedvalues
+            # Agregando la data
+            temp_df_bymonth['SuaExp'] = res
+            temp_df_bymonth['PMP'] = data3
+            temp_df_bymonth['PM'] = data2
+
     fig2 = px.line(temp_df_bymonth,
+        x='dia_incidente',
+        y='size',
+        labels={'dia_incidente': 'Fecha', 'size': 'Total'},
+        title='Violencia hacia la comunidad LGBTQ+ del 2018 al presente año',
+        width=1080,
+        height=720)
+    if option2 == 'Promedio móvil':
+        fig2 = px.line(temp_df_bymonth,
             x='dia_incidente',
-            y='size',
+            y=['size', 'PM'],
+            labels={'dia_incidente': 'Fecha', 'size': 'Total'},
+            title='Violencia hacia la comunidad LGBTQ+ del 2018 al presente año',
+            width=1080,
+            height=720)
+
+    if option2 == 'Promedios móviles ponderados':
+        fig2 = px.line(temp_df_bymonth,
+            x='dia_incidente',
+            y=['size', 'PMP'],
+            labels={'dia_incidente': 'Fecha', 'size': 'Total'},
+            title='Violencia hacia la comunidad LGBTQ+ del 2018 al presente año',
+            width=1080,
+            height=720)
+
+    if option2 == 'Suavizamiento exponencial':
+        fig2 = px.line(temp_df_bymonth,
+            x='dia_incidente',
+            y=['size', 'SuaExp'],
+            labels={'dia_incidente': 'Fecha', 'size': 'Total'},
+            title='Violencia hacia la comunidad LGBTQ+ del 2018 al presente año',
+            width=1080,
+            height=720)
+        
+    if option2 == 'Todos los métodos':
+        fig2 = px.line(temp_df_bymonth,
+            x='dia_incidente',
+            y=['size', 'PM', 'PMP', 'SuaExp'],
             labels={'dia_incidente': 'Fecha', 'size': 'Total'},
             title='Violencia hacia la comunidad LGBTQ+ del 2018 al presente año',
             width=1080,
