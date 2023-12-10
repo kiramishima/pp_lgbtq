@@ -39,8 +39,12 @@ st.header('Serie de tiempo de casos de violencia hacía la comunidad LGBTQ+')
 df_yearly = df_select.groupby(df_select.dia_incidente.dt.year, as_index=False).size()
 df_bymonth = df_select.groupby(pd.Grouper(key='dia_incidente', freq='M'), as_index=False).size()
 
+years = df_select.dia_incidente.dt.year.unique().tolist()
+years.insert(0, 'Todo')
+
 tab1, tab2 = st.tabs(["Por año", "Por mes"])
 with tab1:
+    
     fig = px.line(df_yearly,
                 x='dia_incidente',
                 y='size',
@@ -59,7 +63,19 @@ with tab1:
     })
     st.plotly_chart(fig, theme="streamlit")
 with tab2:
-    fig2 = px.line(df_bymonth,
+
+    option = st.selectbox(
+        "Visualizar por año",
+        years,
+        index=None,
+        placeholder="2023",
+    )
+
+    temp_df_bymonth = df_bymonth.copy()
+    if option != 'Todo':
+        temp_df_bymonth = df_select[df_select.dia_incidente.dt.year == option].groupby(pd.Grouper(key='dia_incidente', freq='M'), as_index=False).size()
+
+    fig2 = px.line(temp_df_bymonth,
             x='dia_incidente',
             y='size',
             labels={'dia_incidente': 'Fecha', 'size': 'Total'},
@@ -260,7 +276,7 @@ st.plotly_chart(fig10, theme=None)
 
 
 st.divider()
-st.header('Mapa CDMX')
+st.header('Mapa agresión en CDMX')
 
 cdmx_map = [19.432608, -99.133209]
 cdmx = gdf[gdf.entidad == 'Ciudad de México']

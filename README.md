@@ -8,3 +8,4 @@ Este repositorio contiene los jupyter notebooks, datos y proceso ETL utilizados 
 - **IA** : Codigo para la materia de IA.
 - **Datasets** : CSV y Excel
 
+Dashboard: [Violencia hacia la comunidad LGBTQ+](https://urc-violencia-lgbtq.streamlit.app/)
