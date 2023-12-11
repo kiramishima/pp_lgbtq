@@ -11,6 +11,6 @@ Este repositorio contiene los jupyter notebooks, datos y proceso ETL utilizados 
 
 Dashboard: [Violencia hacia la comunidad LGBTQ+](https://urc-violencia-lgbtq.streamlit.app/)
 
-## Pasos
+## Proceso
 
-<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/Qns9bSpZ13g?si=eHHdYGiw0grVfghI" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+[![Desarrollo del problema](https://img.youtube.com/vi/Qns9bSpZ13g/0.jpg)](https://youtu.be/Qns9bSpZ13g)
