@@ -10,3 +10,8 @@ Este repositorio contiene los jupyter notebooks, datos y proceso ETL utilizados 
 - **Aplicación** : Contiene el App Android (de momento) de la propuesta presentada. Requiere minimo Android 9 en adelante.
 
 Dashboard: [Violencia hacia la comunidad LGBTQ+](https://urc-violencia-lgbtq.streamlit.app/)
+
+## Pasos
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/Qns9bSpZ13g?si=TgSqjuVIcxTnp6nH" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen>
+</iframe>
